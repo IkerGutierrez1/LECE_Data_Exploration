@@ -10,22 +10,32 @@ df <- xlsx_names %>%
   map_dfr(~ read_excel(.))
 
 df_sheets <- excel_sheets(xlsx_names[1])
-tibble <- lapply(df_sheets, function(x) read_excel(xlsx_names[1], sheet = x))
 
-tibble <- lapply(df_sheets, function(sheet_name) {
-  read_excel(xlsx_names[1], sheet = sheet_name)
-})
 
-i <- 0
-for (sheet in df_sheets){
-  print(sheet)
-  if (grepl("Graphic", sheet)){
-    print("skip")
+df_test <- data.frame()
+#Fecha no incluye año por lo que se repiten filas de Fecha?
+for (excel in xlsx_names){
+  
+  df_sheets <- excel_sheets(excel)
+  print(paste("Procesando excel:", excel))
+  
+  for (sheet in df_sheets) {
+    print(paste("Procesando hoja:", sheet))
+    
+    if (grepl("Datos", sheet)) {
+      temp_df <- read_excel(excel, sheet = sheet)
+      temp_df <- temp_df %>%
+        select(where(~ !all(is.na(.))))
+      
+      if (nrow(df_test) == 0) {
+        df_test <- temp_df
+      } else {
+        # Si df_test ya tiene datos, los unimos por la columna Fecha
+        #df_test <- full_join(df_test, temp_df, by = "Fecha")
+        df_test <- bind_rows(df_test, temp_df)
+      }
   }
-  else 
-    if (grepl("Datos", sheet){
-    df_test <- read_excel(xlsx_names[1], sheet = sheet)
-    }
-  }
+  }}
+
 
 NA_count <- sapply(df, function(x) sum(is.na(x)))
