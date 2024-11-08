@@ -20,6 +20,12 @@ df_5min <- df_5min %>%
   group_by(intervalo) %>%
   summarise(across(everything(), \(x) mean(x, na.rm = TRUE)))
 
+df_5min <- df_5min[, !(names(df_5min) %in% c("Met_Tdir_01"))]
+
+df_5min <- df_5min %>%
+  select(-Met_Tpir_01)
+
+
 #Plots
 Tae_c <-get_columns_with_string(df,"Tae")
 
