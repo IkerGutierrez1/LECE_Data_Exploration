@@ -7,6 +7,10 @@ df <- read.csv("input/data.csv")
 df$timestamp <- ifelse(grepl(" ", df$timestamp), df$timestamp, paste(df$timestamp, "00:00:00"))
 
 #RDS files
+saveRDS(df, file = "data", ascii = FALSE, version = NULL,
+        compress = TRUE, refhook = NULL)
+df_test <- readRDS(file = "data", refhook = NULL)
+
 
 #Plots
 Tae_c <-get_columns_with_string(df,"Tae")
