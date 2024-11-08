@@ -3,6 +3,7 @@ library(dplyr)
 library(purrr)
 library(plotly)
 library(htmlwidgets)
+library(lubridate)
 
 NA_histogram <- function(df , path = "output/plots/", name = "na_histogram.html", linea = 500){
   
