@@ -2,6 +2,7 @@ library(readxl)
 library(dplyr)
 library(purrr)
 library(plotly)
+library(tidyr)
 library(htmlwidgets)
 library(lubridate)
 
@@ -112,7 +113,7 @@ extract_excels_to_csv <- function(excel_path = "input/wetransfer_meteo-lece_01_2
       if (grepl("Datos", sheet)) {
         temp_df <- read_excel(excel, sheet = sheet)
         temp_df <- temp_df %>%
-          select(where(~ !all(is.na(.))))
+          select(where(~ !all(is.na(.)))) #Esto puede ser lo que da problemas
         
         if (nrow(df_test) == 0) {
           df_test <- temp_df
@@ -142,4 +143,42 @@ extract_excels_to_csv <- function(excel_path = "input/wetransfer_meteo-lece_01_2
   write.csv(df, file = paste0(save_dir,save_name), row.names = FALSE)
   print("Data was saved")
   
+}
+
+
+NA_points_col_graph <- function(df, col_na, col_timestamp = "timestamp", path = "output/plots/NA_time_series/"){
+  #Fumcion que hace una grafica de los puntos donde falten valores de una columna frente a los tiempos
+  #Verificar que existen ambas columnas
+  if (!(col_timestamp %in% names(df))) {
+    stop("La columna de timestamp no está en df")
+  }
+  
+  # Asegurarse de que col_na es un vector de caracteres
+  if (is.list(col_na)) {
+    col_na <- unlist(col_na)  # Convierte a vector si es lista
+  }
+  
+  
+  # Asegúrate de que el directorio existe
+  if (!dir.exists(path)) {
+    dir.create(path, recursive = TRUE)
+  }
+  
+  for (col in col_na) {
+    
+    timestamps <- df[[col_timestamp]]
+    missing_data <- ifelse(is.na(df[[col]]), 1, NA)
+    df_aux <- data.frame(timestamp = timestamps, missing_data = missing_data)
+    
+    p <- plot_ly(data = df_aux, x = ~timestamps, y = ~missing_data, type = "scatter", mode = "markers") %>%
+      layout(title = paste("Missing Data for", col),
+             xaxis = list(title = "Timestamps"),
+             yaxis = list(title = "Missing Data"),
+             yaxis = list(tickvals = c(0, 1), ticktext = c("No", "Sí")),
+             showlegend = FALSE
+      )
+    
+    full_path <- paste0(path, paste0(col, ".html"))
+    saveWidget(p, full_path, selfcontained = TRUE)
+  }
 }
