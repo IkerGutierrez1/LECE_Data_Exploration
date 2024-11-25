@@ -2,7 +2,9 @@ library(readxl)
 library(dplyr)
 library(purrr)
 library(plotly)
+library(tidyr)
 library(htmlwidgets)
+library(lubridate)
 
 NA_histogram <- function(df , path = "output/plots/", name = "na_histogram.html", linea = 500){
   
@@ -141,4 +143,134 @@ extract_excels_to_csv <- function(excel_path = "input/wetransfer_meteo-lece_01_2
   write.csv(df, file = paste0(save_dir,save_name), row.names = FALSE)
   print("Data was saved")
   
+}
+
+change_frequency_15min <- function(df){
+  #Change frecuency
+  #Create colum interval indicating start of the interval, timestamp has the mean of timestamps
+  #if the the measures should only be befoer the specify timetamops change timestamp by start_interbal + interval
+  time_aggregation <- "15 minutes"
+  df <- df %>%
+    mutate(timestamp = ymd_hms(timestamp)) %>%
+    mutate(interval = floor_date(timestamp, unit = time_aggregation )) %>%
+    group_by(interval) %>%
+    summarise(across(everything(), \(x) mean(x, na.rm = TRUE))) %>%
+    mutate(timestamp = interval + minutes(15))
+  
+  return (df)
+  
+}
+
+
+fill_NA <- function(df, df_original_data, cols){
+  #df_original data is a df with same amount of data with True if the data is not NA and False if not
+  for (col in cols) {  # Reemplaza con el nombre de tus columnas con NA
+    for (i in which(is.na(df[[col]]))) {  # Recorrer solo las filas con NA en la columna 'col'
+      # Obtener el timestamp del valor NA
+      timestamp_na <- df$timestamp[i]
+      
+      # Encontrar el valor en la columna correspondiente del día anterior (24 horas antes)
+      timestamp_anterior <- timestamp_na - 24*60*60  # Restamos 24 horas
+      valor_anterior <- df[[col]][df$timestamp == timestamp_anterior]
+      
+      
+      # Encontrar el valor en la columna correspondiente del día posterior (24 horas después)
+      timestamp_posterior <- timestamp_na + 24*60*60  # Sumamos 24 horas
+      valor_posterior <- df[[col]][df$timestamp == timestamp_posterior]
+      
+      #Check for first or last day
+      timestamp_na_first <- df$timestamp[i] - 15*60
+      first <- df_original_data[[col]][df_original_data$timestamp == timestamp_na_first]
+      if(first[1] == TRUE){
+        #Calc dif for previous day
+        timestamp_na_first_prev <- timestamp_na_first - 24*60*60
+        timestamp_na_first_next <- timestamp_na_first + 24*60*60
+
+        
+        diff_first_prev <- df[[col]][df$timestamp == timestamp_na_first_prev] - valor_anterior #Valor bien calculado compararlo de alguna forma con la dif del punto de fill
+        diff_first_next <- df[[col]][df$timestamp == timestamp_na_first_next] - valor_posterior
+
+        diff_first <- (diff_first_prev+diff_first_next)/2
+        first_timestamp <- timestamp_na
+        
+      }
+      
+      timestamp_na_post <- df$timestamp[i] + 15*60
+      last <- df_original_data[[col]][df_original_data$timestamp == timestamp_na_post]
+      if(last[1] == TRUE){
+        timestamp_na_last_prev <- timestamp_na_post - 24*60*60
+        timestamp_na_last_next <- timestamp_na_post + 24*60*60
+
+        diff_last_prev <- df[[col]][df$timestamp == timestamp_na_last_prev] - valor_anterior
+        diff_last_next <- df[[col]][df$timestamp == timestamp_na_last_next] - valor_posterior #Valor bien calculado compararlo de alguna forma con la dif del punto de fill
+        
+        diff_last <- (diff_last_prev+diff_last_next)/2
+        last_timestamp <- timestamp_na
+      }
+      
+
+      
+      if (length(valor_anterior) > 1){
+        valor_anterior = valor_anterior[1] #No clue why it takes more than 1 value and the second is NA
+      }
+      if (length(valor_posterior) > 1){
+        valor_posterior = valor_posterior[1] #No clue why it takes more than 1 value and the second is NA
+      }
+      
+      # Si ambos valores existen, calculamos la media
+      if (!is.na(valor_anterior) && !is.na(valor_posterior)) {
+        df[[col]][i] <- mean(c(valor_anterior, valor_posterior), na.rm = TRUE)
+      }
+      # Si solo hay un valor, se asigna ese valor (puedes modificar esto si prefieres otra lógica)
+      else if (!is.na(valor_anterior)) {
+        df[[col]][i] <- valor_anterior
+      } else if (!is.na(valor_posterior)) {
+        df[[col]][i] <- valor_posterior
+      }
+      
+        
+      
+    }
+    df <- adjust_points(df, col, first_timestamp, last_timestamp, diff_first, diff_last)
+  }
+  
+  
+  return (df)
+}
+
+
+adjust_points <- function(df, col, first_timestamp, last_timestamp, diff_first, diff_last){
+  
+  diff_first_fill <- df[[col]][df$timestamp == (first_timestamp - 15*60)] - df[[col]][df$timestamp == first_timestamp]
+  diff_last_fill <- df[[col]][df$timestamp == (last_timestamp + 15*60)] - df[[col]][df$timestamp == (last_timestamp)]
+  
+  print("Fill diffs")
+  print(diff_first_fill)
+  print(diff_last_fill)
+  
+  first_offset <- diff_first - diff_first_fill
+  last_offset <- diff_last - diff_last_fill
+  
+  print("Offsets")
+  print(first_offset)
+  print(last_offset)
+  
+  interval_minutes <- as.numeric(last_timestamp-first_timestamp, units = "mins")
+  
+  df_filtered <- df[df$timestamp >= first_timestamp & df$timestamp <= last_timestamp, ]
+  
+  indexes <- which(df$timestamp >= first_timestamp & df$timestamp <= last_timestamp)
+  
+  for (i in indexes) {
+    # Accede a cada fila usando df_filtered[i, ]
+    
+    timestamp_na <- df$timestamp[i]
+    
+    f = as.numeric((timestamp_na - first_timestamp), units = "mins")/ interval_minutes
+    
+    df[[col]][df$timestamp == timestamp_na] <- df[[col]][df$timestamp == timestamp_na] - (1-f)*first_offset - f*last_offset
+
+  }
+  
+  return (df)
 }
