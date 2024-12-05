@@ -54,7 +54,7 @@ df_t <- fill_NA(df_filtered, df_original_data, cols = Mz_Ts)
 Time_series_graph(df_t,columnas = Mz_Ts)
 
 
-#Modificar df para pruebas sobre datos que si tenemos 
+#Select dates to plot
 filter_from <- as.POSIXct("2024-07-15 14:00:00", format = "%Y-%m-%d %H:%M:%S")
 filter_to <- as.POSIXct("2024-07-23 16:00:00", format = "%Y-%m-%d %H:%M:%S")
 

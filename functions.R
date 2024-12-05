@@ -9,43 +9,29 @@ library(rlang)
 
 NA_histogram <- function(df , path = "output/plots/", name = "na_histogram.html", linea = 500){
   
-  # Asegúrate de que el directorio existe
   if (!dir.exists(path)) {
     dir.create(path, recursive = TRUE)
   }
   
-  # Contar los NA por columna
   na_counts <- sapply(df, function(x) sum(is.na(x)))
-  # Crear un dataframe con los resultados
   na_summary <- data.frame(Columna = names(na_counts), NA_Count = na_counts)
-  # Ordenar el dataframe de mayor a menor
   na_summary <- na_summary[order(-na_summary$NA_Count), ]
-  # Convertir la columna a factor para mantener el orden
   na_summary$Columna <- factor(na_summary$Columna, levels = na_summary$Columna)
-  # Crear un gráfico interactivo
   p <- plot_ly(na_summary, x = ~Columna, y = ~NA_Count, type = 'bar') %>%
     layout(title = "Número de NA por Columna",
            xaxis = list(title = "Columnas", tickangle = -45),
            yaxis = list(title = "Número de NA"),
            shapes = list(
              list(type = 'line',
-                  x0 = -0.5, x1 = nrow(na_summary) - 0.5,  # Extensión horizontal
+                  x0 = -0.5, x1 = nrow(na_summary) - 0.5,  
                   y0 = linea, y1 = linea,
                   line = list(color = 'red', width = 2, dash = 'dash'))
            ))
   
-  # Guarda el gráfico como un archivo HTML primero
   saveWidget(p, paste0(path,name), selfcontained = TRUE)
 }
 
 Time_series_graph <- function(df,columnas, fecha_inicio = NULL, fecha_fin = NULL, path = "output/plots/time_series/") {
-  #Funcion que permite grafica  las time series, se pueden pasar tantas columnas como se
-  #quieran, se puede especificar desde que fecha y hasta cual y se pueden no especificar
-  #y cogera la primera fecha del dataframe y la ultima
-  
-  #TODO podria estar bien añadir una linea que sea la media del dia para mas claridad
-  
-  # Si no se pasan fechas, seleccionar la primera y última
   if (is.null(fecha_inicio)) {
     fecha_inicio <- min(df$timestamp, na.rm = TRUE)
   }
@@ -53,18 +39,15 @@ Time_series_graph <- function(df,columnas, fecha_inicio = NULL, fecha_fin = NULL
     fecha_fin <- max(df$timestamp, na.rm = TRUE)
   }
   
-  # Asegúrate de que el directorio existe
   if (!dir.exists(path)) {
     dir.create(path, recursive = TRUE)
   }
   
-  # Filtrar el dataframe por el rango de fechas
   df_filtrado <- df %>%
     filter(timestamp >= fecha_inicio & timestamp <= fecha_fin)
   
-  # Iterar sobre cada columna en la lista
+
   for (y_col in columnas) {
-    # Crear la gráfica
     p <- plot_ly(data = df_filtrado, 
                  x = ~timestamp, 
                  y = df_filtrado[[y_col]], 
@@ -82,14 +65,10 @@ Time_series_graph <- function(df,columnas, fecha_inicio = NULL, fecha_fin = NULL
 }
 
 get_columns_with_string <- function(dataframe, search_string,ignore_case = TRUE) {
-  #FUnción para obtener los nombres de las columnas que contenga el substring deseado
-  #por defecto ignora Mayusculas/minusculas pero cambiando ignore_case se puede cambiar
-  # Verificar si el dataframe es válido
   if (!is.data.frame(dataframe)) {
     stop("El primer argumento debe ser un dataframe.")
   }
   
-  # Obtener los nombres de las columnas que contienen el substring
   matching_columns <- names(dataframe)[grepl(search_string, names(dataframe), ignore.case = ignore_case)]
   
   return(matching_columns)
@@ -165,18 +144,16 @@ change_frequency_15min <- function(df){
 
 fill_NA <- function(df, df_original_data, cols){
   #df_original data is a df with same amount of data with True if the data is not NA and False if not
-  for (col in cols) {  # Reemplaza con el nombre de tus columnas con NA
-    for (i in which(is.na(df[[col]]))) {  # Recorrer solo las filas con NA en la columna 'col'
-      # Obtener el timestamp del valor NA
+  for (col in cols) {  
+    for (i in which(is.na(df[[col]]))) {  
       timestamp_na <- df$timestamp[i]
       
-      # Encontrar el valor en la columna correspondiente del día anterior (24 horas antes)
-      timestamp_anterior <- timestamp_na - 24*60*60  # Restamos 24 horas
+      timestamp_anterior <- timestamp_na - 24*60*60  
       valor_anterior <- df[[col]][df$timestamp == timestamp_anterior]
       
       
-      # Encontrar el valor en la columna correspondiente del día posterior (24 horas después)
-      timestamp_posterior <- timestamp_na + 24*60*60  # Sumamos 24 horas
+
+      timestamp_posterior <- timestamp_na + 24*60*60  
       valor_posterior <- df[[col]][df$timestamp == timestamp_posterior]
       
       #Check for first or last day
@@ -188,7 +165,7 @@ fill_NA <- function(df, df_original_data, cols){
         timestamp_na_first_next <- timestamp_na_first + 24*60*60
 
         
-        diff_first_prev <- df[[col]][df$timestamp == timestamp_na_first_prev] - valor_anterior #Valor bien calculado compararlo de alguna forma con la dif del punto de fill
+        diff_first_prev <- df[[col]][df$timestamp == timestamp_na_first_prev] - valor_anterior 
         diff_first_next <- df[[col]][df$timestamp == timestamp_na_first_next] - valor_posterior
 
         diff_first <- (diff_first_prev+diff_first_next)/2
@@ -203,7 +180,7 @@ fill_NA <- function(df, df_original_data, cols){
         timestamp_na_last_next <- timestamp_na_post + 24*60*60
 
         diff_last_prev <- df[[col]][df$timestamp == timestamp_na_last_prev] - valor_anterior
-        diff_last_next <- df[[col]][df$timestamp == timestamp_na_last_next] - valor_posterior #Valor bien calculado compararlo de alguna forma con la dif del punto de fill
+        diff_last_next <- df[[col]][df$timestamp == timestamp_na_last_next] - valor_posterior 
         
         diff_last <- (diff_last_prev+diff_last_next)/2
         last_timestamp <- timestamp_na
@@ -212,17 +189,16 @@ fill_NA <- function(df, df_original_data, cols){
 
       
       if (length(valor_anterior) > 1){
-        valor_anterior = valor_anterior[1] #No clue why it takes more than 1 value and the second is NA
+        valor_anterior = valor_anterior[1] 
       }
       if (length(valor_posterior) > 1){
-        valor_posterior = valor_posterior[1] #No clue why it takes more than 1 value and the second is NA
+        valor_posterior = valor_posterior[1] 
       }
-      
-      # Si ambos valores existen, calculamos la media
+    
       if (!is.na(valor_anterior) && !is.na(valor_posterior)) {
         df[[col]][i] <- mean(c(valor_anterior, valor_posterior), na.rm = TRUE)
       }
-      # Si solo hay un valor, se asigna ese valor (puedes modificar esto si prefieres otra lógica)
+
       else if (!is.na(valor_anterior)) {
         df[[col]][i] <- valor_anterior
       } else if (!is.na(valor_posterior)) {
