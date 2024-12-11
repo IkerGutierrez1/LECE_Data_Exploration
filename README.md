@@ -41,7 +41,11 @@ $$
 offset_{l} = \frac{x(t_{\text{last}} - 24\text{h} + t_{\text{step}}) - x(t_{\text{last}} - 24\text{h})}{2} + \frac{x(t_{\text{last}} + 24\text{h} + t_{\text{step}}) - x(t_{\text{last}} + 24\text{h})}{2} - \left( x(t_{\text{last}} + t_{\text{step}}) - x(t_{\text{last}}) \right) 
 $$
 
+- $t_{\text{step}}$ is the time for 1 step (15 mintues)
 
+-$t_{\text{first}}$ is the time for the first filled point
+
+-$t_{\text{last}}$ is the time for the last filled point
 
 
 
