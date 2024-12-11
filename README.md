@@ -28,17 +28,17 @@ The dataset contains temperature, solar radiation, humidity... for a small build
 The filling method is seen in the equation:
 $$
 x^{\prime}(t) = x_{mean}(t) + (1-w) \cdot offset_{f} + w \cdot offset_{l}
-\label{eq_fill}
+
 $$
 
 w is a weight indicating how far from the first point the point that is beeing filled is, and the offsets are calculated with:
 
 $$
-offset_{f} = \frac{x(t_{\text{first}} - 24\,\text{h} - t_{\text{step}}) - x(t_{\text{first}} - 24\,\text{h})}{2} + \frac{x(t_{\text{first}} + 24\,\text{h} - t_{\text{step}}) - x(t_{\text{first}} + 24\,\text{h})}{2} - \left( x(t_{\text{first}} - t_{\text{step}}) - x(t_{\text{first}}) \right) \label{eq_offset_first}
+offset_{f} = \frac{x(t_{\text{first}} - 24\,\text{h} - t_{\text{step}}) - x(t_{\text{first}} - 24\,\text{h})}{2} + \frac{x(t_{\text{first}} + 24\,\text{h} - t_{\text{step}}) - x(t_{\text{first}} + 24\,\text{h})}{2} - \left( x(t_{\text{first}} - t_{\text{step}}) - x(t_{\text{first}}) \right) 
 $$
 
 $$
-offset_{l} = \frac{x(t_{\text{last}} - 24\,\text{h} + t_{\text{step}}) - x(t_{\text{last}} - 24\,\text{h})}{2} + \frac{x(t_{\text{last}} + 24\,\text{h} + t_{\text{step}}) - x(t_{\text{last}} + 24\,\text{h})}{2} - \left( x(t_{\text{last}} + t_{\text{step}}) - x(t_{\text{last}}) \right) \label{eq_offset_last}
+offset_{l} = \frac{x(t_{\text{last}} - 24\,\text{h} + t_{\text{step}}) - x(t_{\text{last}} - 24\,\text{h})}{2} + \frac{x(t_{\text{last}} + 24\,\text{h} + t_{\text{step}}) - x(t_{\text{last}} + 24\,\text{h})}{2} - \left( x(t_{\text{last}} + t_{\text{step}}) - x(t_{\text{last}}) \right) 
 $$
 
 
