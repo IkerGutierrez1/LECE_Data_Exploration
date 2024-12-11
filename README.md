@@ -34,14 +34,14 @@ $$
 w is a weight indicating how far from the first point the point that is beeing filled is, and the offsets are calculated with:
 
 $$
-offset_{f} = \frac{x(t_{\text{first}} - 24\,\text{h} - t_{\text{step}}) - x(t_{\text{first}} - 24\,\text{h})}{2} + \frac{x(t_{\text{first}} + 24\,\text{h} - t_{\text{step}}) - x(t_{\text{first}} + 24\,\text{h})}{2} - \left( x(t_{\text{first}} - t_{\text{step}}) - x(t_{\text{first}}) \right) 
+offset_{f} = \frac{x(t_{\text{first}} - 24\text{h} - t_{\text{step}}) - x(t_{\text{first}} - 24\text{h})}{2} + \frac{x(t_{\text{first}} + 24\text{h} - t_{\text{step}}) - x(t_{\text{first}} + 24\text{h})}{2} - \left( x(t_{\text{first}} - t_{\text{step}}) - x(t_{\text{first}}) \right) 
 $$
 
 $$
-offset_{l} = \frac{x(t_{\text{last}} - 24\text{h} + t_{\text{step}}) - x(t_{\text{last}} - 24h)}{2} + \frac{x(t_{\text{last}} + 24h\,\text{h} + t_{\text{step}}) - x(t_{\text{last}} + 24\,\text{h})}{2} - \left( x(t_{\text{last}} + t_{\text{step}}) - x(t_{\text{last}}) \right) 
+offset_{l} = \frac{x(t_{\text{last}} - 24\text{h} + t_{\text{step}}) - x(t_{\text{last}} - 24\text{h})}{2} + \frac{x(t_{\text{last}} + 24\text{h} + t_{\text{step}}) - x(t_{\text{last}} + 24\text{h})}{2} - \left( x(t_{\text{last}} + t_{\text{step}}) - x(t_{\text{last}}) \right) 
 $$
 
-## Ecuaciones
+
 
 
 
