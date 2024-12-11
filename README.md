@@ -28,7 +28,6 @@ The dataset contains temperature, solar radiation, humidity... for a small build
 The filling method is seen in the equation:
 $$
 x^{\prime}(t) = x_{mean}(t) + (1-w) \cdot offset_{f} + w \cdot offset_{l}
-
 $$
 
 w is a weight indicating how far from the first point the point that is beeing filled is, and the offsets are calculated with:
