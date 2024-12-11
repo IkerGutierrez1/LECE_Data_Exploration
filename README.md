@@ -37,7 +37,7 @@ w is a weight indicating how far from the first point the point that is beeing f
 
 ### Ecuación 2
 $$
-offset_{f} = \frac{x(t_{\text{first}} - 24\,\text{h} - t_{\text{step}}) - x(t_{\text{first}} - 24\,\text{h})}{2} + \frac{x(t_{\text{first}} + 24\,\text{h} - t_{\text{step}}) - x(t_{\text{first}} + 24\,\text{h})}{2} - \left( x(t_{\text{first}} - t_{\text{step}}) - x(t_{\text{first}}) \right) \label{eq_offset_first}
+offset_{f} = \frac{x(t_{\text{first}} - 24\\text{h} - t_{\text{step}}) - x(t_{\text{first}} - 24\\text{h})}{2} + \frac{x(t_{\text{first}} + 24\\text{h} - t_{\text{step}}) - x(t_{\text{first}} + 24\\text{h})}{2} - \left( x(t_{\text{first}} - t_{\text{step}}) - x(t_{\text{first}}) \right) \label{eq_offset_first}
 $$
 
 ### Ecuación 3
