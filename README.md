@@ -22,3 +22,11 @@ The dataset contains temperature, solar radiation, humidity... for a small build
 - fill_NA is used to fill short periodos of time (a day) of missing data, it could be adapated to fill longer periods. The process to fill the data starts with calculating the mean value from the previous and next days and filling with that value, after data adjust points is called to make it fit the real data.
 
 - adjust_points fit the data from fill_NA to the real data, for that the difference between the first and last point of the filling with the real data is calculated and 2 offsets are obtained by comparing the difference with the ones from the same hour of the previous and next days. This offsets are then added to the mean value to complete the filling.
+
+## Filling method
+
+$$
+x^{\prime}(t) = x_{mean}(t) + (1-w) \cdot offset_{f} + w \cdot offset_{l}
+\label{eq_fill}
+$$
+
