@@ -8,7 +8,7 @@ The dataset contains temperature, solar radiation, humidity... for a small build
 
 ## Repository structure
 
-###Files 
+### Files 
 
 - exploration.R contains the code to read the data fromt the excel files where the data was. It also fills timestamps because when the data for all signals was missing the timestmps were also missing. A new df is created to in
   indicate if the data was real or if filled, it only contains TRUE or FALSE. After line 37 different plots are obtained.
@@ -17,7 +17,7 @@ The dataset contains temperature, solar radiation, humidity... for a small build
 
 - output folder contains some of the obtained plots.
 
-##Relevant functions
+## Relevant functions
 
 - fill_NA is used to fill short periodos of time (a day) of missing data, it could be adapated to fill longer periods. The process to fill the data starts with calculating the mean value from the previous and next days and filling with that value, after data adjust points is called to make it fit the real data.
 
