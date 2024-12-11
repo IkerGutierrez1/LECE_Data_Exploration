@@ -33,6 +33,7 @@ $$
 
 w is a weight indicating how far from the first point the point that is beeing filled is, and the offsets are calculated with:
 
+### Ecuación 2
 ![Ecuación 2](https://latex.codecogs.com/png.latex?offset_%7Bf%7D%20%3D%20%5Cfrac%7Bx%28t_%7B%5Ctext%7Bfirst%7D%7D%20-%2024%5C%2C%5Ctext%7Bh%7D%20-%20t_%7B%5Ctext%7Bstep%7D%7D%29%20-%20x%28t_%7B%5Ctext%7Bfirst%7D%7D%20-%2024%5C%2C%5Ctext%7Bh%7D%29%7D%7B2%7D%20%2B%20%5Cfrac%7Bx%28t_%7B%5Ctext%7Bfirst%7D%7D%20%2B%2024%5C%2C%5Ctext%7Bh%7D%20-%20t_%7B%5Ctext%7Bstep%7D%7D%29%20-%20x%28t_%7B%5Ctext%7Bfirst%7D%7D%20%2B%2024%5C%2C%5Ctext%7Bh%7D%29%7D%7B2%7D%20-%20%5Cleft%28%20x%28t_%7B%5Ctext%7Bfirst%7D%7D%20-%20t_%7B%5Ctext%7Bstep%7D%7D%29%20-%20x%28t_%7B%5Ctext%7Bfirst%7D%7D%29%20%5Cright%29)
 
 
